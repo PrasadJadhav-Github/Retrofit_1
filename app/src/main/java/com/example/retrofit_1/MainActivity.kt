@@ -1,49 +1,41 @@
 package com.example.retrofit_1
 
+import PostAdapter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.bumptech.glide.Glide
-import com.example.retrofit_1.databinding.ActivityMainBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var activityMainBinding: ActivityMainBinding
-
+    private lateinit var postAdapter: PostAdapter
+    private lateinit var  recyclerView: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Inflate the layout using ViewBinding
-        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(activityMainBinding.root)
+        setContentView(R.layout.activity_main)
 
-        // Get an instance of the UsersService class
-        val usersService = UsersService.getInstance()
-        // Log the class name of the UsersService instance
-        Log.e("tag", "Class which implements UsersService: ${usersService::class.java.name}")
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Set onClickListener for the button to fetch user data
-        activityMainBinding.btnFetchUserData.setOnClickListener {
-            // Use CoroutineScope to launch a coroutine in IO context
-            CoroutineScope(Dispatchers.IO).launch {
-                // Fetch user data using the fetchUsers method of UsersService
-                val userModel = usersService.fetchUsers(activityMainBinding.edtUserId.text.toString().toInt())
+        fetchPosts()
+    }
 
-                // Switch to Main thread to update UI elements
-                withContext(Dispatchers.Main) {
-                    // Set the email text view with user's email
-                    activityMainBinding.txtEmail.text = userModel.data.email
-                    // Set the username text view with user's first and last name
-                    activityMainBinding.txtUsername.text = "${userModel.data.firstName} ${userModel.data.lastName}"
-                    // Load the user's avatar image into the ImageView using Glide library
-                    Glide.with(this@MainActivity)
-                        .load(userModel.data.avatar)
-                        .into(activityMainBinding.imgUser)
+    private fun fetchPosts() {
+        ApiService.RetrofitInstance.api.getPosts().enqueue(object : Callback<PostResponse>{
+            override fun onResponse(call: Call<PostResponse>, response: Response<PostResponse>) {
+                if(response.isSuccessful){
+                    val posts = response.body()?.posts ?: emptyList()
+                    postAdapter = PostAdapter(posts)
+                    recyclerView.adapter = postAdapter
                 }
             }
-        }
+
+            override fun onFailure(call: Call<PostResponse>, t: Throwable) {
+
+            }
+
+        })
     }
 }

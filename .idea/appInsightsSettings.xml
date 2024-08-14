@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.retrofit_1" />
+                  <option name="mobileSdkAppId" value="1:3088204636:android:24f88174cf6e004c917799" />
+                  <option name="projectId" value="retrofit-1" />
+                  <option name="projectNumber" value="3088204636" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
